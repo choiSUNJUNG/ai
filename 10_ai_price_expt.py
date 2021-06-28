@@ -59,7 +59,7 @@ model.summary()
 
 #학습 및 예측
 model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(train_x, train_y, epochs=60, batch_size=30)
+model.fit(train_x, train_y, epochs=60, batch_size=30)  # error 나는 부분
 pred_y = model.predict(test_x)
 
 #실제 종가와 예측치를 그래프로 비교
@@ -73,4 +73,4 @@ plt.legend()
 plt.show()
 
 #다음날 예측 종가 출력
-print("SEC tomorrow's price : ", raw_df.close[-1] * pred_y[-1] / dfy.close[-1])
+print("SEC tomorrow's price : ", raw_df.Close[-1] * pred_y[-1] / dfy.Close[-1])
