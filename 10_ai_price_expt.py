@@ -6,13 +6,17 @@ import yfinance as yf
 import pandas as pd
 import openpyxl
 import numpy as np
+import datetime
+import time
 import matplotlib.pyplot as plt
 # from Investar import Analyzer
+
+yf.pdr_override()
 
 # 기업 OHLVC 데이터 조회
 # mk = Analyzer.MarketDB()
 # raw_df = mk.get_daily_price('삼성전자', '2021-01-01', '2021-06-11')
-raw_df = pdr.get_data_yahoo('msft', start='2021-01-01') 
+raw_df = pdr.get_data_yahoo('atnf', start = '2020-01-01') 
 
 def MinMaxScaler(data) :
     """ 최소값과 최대값을 이용하여 0 ~ 1 값으로 변환 """
@@ -51,7 +55,7 @@ test_y = np.array(data_y[train_size : len(data_y)])
 #모델 생성
 model = Sequential()
 model.add(LSTM(units=10, activation = 'relu', return_sequences=True, input_shape = (window_size, 5)))
-model.add(Dropout(0, 1))
+model.add(Dropout(0.1))
 model.add(LSTM(units=10, activation='relu'))
 model.add(Dropout(0.1))
 model.add(Dense(units=1))
@@ -59,8 +63,11 @@ model.summary()
 
 #학습 및 예측
 model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(train_x, train_y, epochs=60, batch_size=30)  # error 나는 부분
-pred_y = model.predict(test_x)
+model.fit(train_x, train_y, epochs=60, batch_size=30)  # 학습
+pred_y = model.predict(test_x)  # 예측
+
+#다음날 예측 종가 출력
+print("SEC tomorrow's price : ", raw_df.Close[-1] * pred_y[-1] / dfy.Close[-1])
 
 #실제 종가와 예측치를 그래프로 비교
 plt.figure()
@@ -72,5 +79,3 @@ plt.ylabel('stock price')
 plt.legend()
 plt.show()
 
-#다음날 예측 종가 출력
-print("SEC tomorrow's price : ", raw_df.Close[-1] * pred_y[-1] / dfy.Close[-1])
